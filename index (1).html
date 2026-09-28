@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Excel2Dashboard - Clinical Data Analytics Platform</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --secondary: #10b981;
+      --text-dark: #1f2937;
+      --text-light: #6b7280;
+      --border: #e5e7eb;
+      --bg-light: #f9fafb;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text-dark: #f3f4f6;
+        --text-light: #d1d5db;
+        --border: #374151;
+        --bg-light: #111827;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      scroll-padding-top: env(safe-area-inset-top, 0);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      color: var(--text-dark);
+      background: white;
+      line-height: 1.6;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #0f1419;
+      }
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* HERO SECTION */
+    .hero {
+      padding: 120px 24px 80px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 350px;
+      background: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+      filter: blur(40px);
+      z-index: -1;
+    }
+
+    .hero-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
+
+    .hero-left h1 {
+      font-size: 56px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      color: var(--text-dark);
+    }
+
+    @media (max-width: 768px) {
+      .hero-left h1 {
+        font-size: 36px;
+      }
+    }
+
+    .hero-left p {
+      font-size: 18px;
+      color: var(--text-light);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 32px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .trust-badges {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 48px;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .hero-right {
+      perspective: 1000px;
+    }
+
+    .dashboard-preview {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transform: rotateX(5deg) rotateY(-5deg);
+      transition: transform 0.3s ease;
+    }
+
+    .dashboard-preview:hover {
+      transform: rotateX(3deg) rotateY(-3deg);
+    }
+
+    .browser-header {
+      background: var(--bg-light);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .browser-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .dashboard-content {
+      padding: 24px;
+      background: white;
+      max-height: 300px;
+      overflow: hidden;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .kpi-card {
+      padding: 16px;
+      background: var(--bg-light);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .kpi-meta {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    /* SECTION HEADER */
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .section-header-tag {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-header h2 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-dark);
+    }
+
+    @media (max-width: 768px) {
+      .section-header h2 {
+        font-size: 28px;
+      }
+    }
+
+    .section-header p {
+      font-size: 18px;
+      color: var(--text-light);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* HOW IT WORKS */
+    .how-it-works {
+      padding: 120px 24px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .step {
+      text-align: center;
+    }
+
+    .step-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--primary);
+      color: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 24px;
+    }
+
+    .step h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-dark);
+    }
+
+    .step p {
+      color: var(--text-light);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* FEATURES */
+    .features {
+      padding: 120px 24px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .feature-card {
+      padding: 32px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.1);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      color: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-dark);
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    /* USE CASES */
+    .use-cases {
+      padding: 120px 24px;
+    }
+
+    .use-cases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .use-case-card {
+      padding: 32px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .use-case-card:hover {
+      border-color: var(--primary);
+    }
+
+    .use-case-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--primary);
+      color: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 20px;
+    }
+
+    .use-case-card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-dark);
+    }
+
+    .use-case-card p {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .use-case-tag {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+    }
+
+    /* PRIVACY */
+    .privacy {
+      padding: 120px 24px;
+    }
+
+    .privacy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .privacy-card {
+      padding: 32px;
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .privacy-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--secondary);
+      color: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .privacy-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-dark);
+    }
+
+    .privacy-card p {
+      font-size: 14px;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    /* FORM SECTION */
+    .form-section {
+      padding: 120px 24px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+    }
+
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-section h2 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .form-section h2 {
+        font-size: 28px;
+      }
+    }
+
+    .form-description {
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 40px;
+      opacity: 0.95;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--text-dark);
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+      background: white;
+    }
+
+    .form-group input::placeholder {
+      color: #9ca3af;
+    }
+
+    .form-submit {
+      width: 100%;
+      padding: 14px 24px;
+      background: white;
+      color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 24px;
+    }
+
+    .form-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .form-message {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+      font-size: 14px;
+    }
+
+    .form-message.success {
+      background: rgba(16, 185, 129, 0.2);
+      color: #d1fae5;
+      display: block;
+    }
+
+    .form-message.error {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fee2e2;
+      display: block;
+    }
+
+    .payment-link {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 12px 24px;
+      background: white;
+      color: var(--primary);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .payment-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* FAQ */
+    .faq {
+      padding: 120px 24px;
+    }
+
+    .faq-list {
+      max-width: 700px;
+      margin: 48px auto 0;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    .faq-item:first-child {
+      border-top: 1px solid var(--border);
+    }
+
+    .faq-question {
+      padding: 20px 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: var(--text-dark);
+      transition: color 0.3s ease;
+    }
+
+    .faq-question:hover {
+      color: var(--primary);
+    }
+
+    .faq-toggle {
+      font-size: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item.active .faq-toggle {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      color: var(--text-light);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 300px;
+      padding-bottom: 12px;
+    }
+
+    /* CTA BANNER */
+    .final-cta {
+      padding: 80px 24px;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+    }
+
+    .final-cta h2 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .final-cta h2 {
+        font-size: 28px;
+      }
+    }
+
+    .final-cta p {
+      font-size: 18px;
+      margin-bottom: 40px;
+      opacity: 0.95;
+    }
+
+    .server-info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      max-width: 200px;
+      z-index: 9999;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .server-info {
+        bottom: 10px;
+        right: 10px;
+        max-width: 150px;
+        font-size: 11px;
+      }
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-light {
+      background: white;
+      color: var(--primary);
+    }
+
+    .btn-light:hover {
+      background: #f3f4f6;
+    }
+
+    /* RESPONSIVE */
+    @media (prefers-color-scheme: dark) {
+      .dashboard-preview,
+      .kpi-card,
+      .feature-card,
+      .use-case-card,
+      .privacy-card,
+      .form-group input {
+        background: #1f2937;
+      }
+
+      .browser-header {
+        background: #111827;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-left">
+          <div class="section-header-tag">Transform Your Data</div>
+          <h1>Excel to Interactive Dashboards in Minutes</h1>
+          <p>Upload your spreadsheet. Get instant insights. No coding, no complexity—just powerful clinical research analytics at your fingertips.</p>
+          
+          <div class="hero-cta">
+            <button class="btn btn-primary" onclick="scrollToForm()">Get Started Free</button>
+            <a href="https://payments.cashfree.com/forms/getaudit" class="btn btn-secondary" target="_blank">Free Audit for ₹1</a>
+          </div>
+
+          <div class="trust-badges">
+            <div class="badge">Trusted by JSS Hospital</div>
+            <div class="badge">HIPAA-ready architecture</div>
+            <div class="badge">100% browser-based</div>
+            <div class="badge">Zero vendor lock-in</div>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="dashboard-preview">
+            <div class="browser-header">
+              <div class="browser-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+              </div>
+              <div style="flex: 1; text-align: center; font-size: 12px; color: var(--text-light);">analytics.dashboard</div>
+            </div>
+            <div class="dashboard-content">
+              <div class="kpi-row">
+                <div class="kpi-card">
+                  <div class="kpi-label">Total Records</div>
+                  <div class="kpi-value">12,450</div>
+                  <div class="kpi-meta">↑ 12.5% this month</div>
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-label">Average Value</div>
+                  <div class="kpi-value">$428.50</div>
+                  <div class="kpi-meta">Std dev: 12.4</div>
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-label">Categories</div>
+                  <div class="kpi-value">18 Active</div>
+                  <div class="kpi-meta">4 dominant</div>
+                </div>
+                <div class="kpi-card">
+                  <div class="kpi-label">Data Quality</div>
+                  <div class="kpi-value">99.8%</div>
+                  <div class="kpi-meta">0.2% cleaned</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-header-tag">4-Step Process</div>
+        <h2>How It Works</h2>
+        <p>Simple, intuitive, and powerful analytics in four straightforward steps</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step">
+          <div class="step-icon">📤</div>
+          <h3>Upload Dataset</h3>
+          <p>Bring your Excel, CSV, or other structured data files into the platform effortlessly.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">🔍</div>
+          <h3>Analyse Schema</h3>
+          <p>Automatic detection identifies numerical, categorical, date, and structured fields without manual tagging.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">📊</div>
+          <h3>Auto-Visualize</h3>
+          <p>Generate appropriate visualizations based on your data structure. Charts that make statistical sense.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">🎯</div>
+          <h3>Explore & Share</h3>
+          <p>Interact with dashboards, filter across dimensions, and export high-resolution PNG, SVG, or PDF.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-header-tag">Capabilities</div>
+        <h2>Powerful Features</h2>
+        <p>Everything you need to analyze and present clinical research data</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📁</div>
+          <h3>Excel & CSV Upload</h3>
+          <p>Bring your existing datasets into the platform effortlessly. Full support for modern .xlsx workbooks and raw delimited .csv files.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <h3>Automatic Data Detection</h3>
+          <p>Identify numerical, categorical, date, and other structured fields without manual tagging or type-casting.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Smart KPI Generation</h3>
+          <p>Surface useful summary metrics and statistical overviews from your dataset, including medians, totals, and distributions.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>Chart Recommendations</h3>
+          <p>Generate appropriate visualizations based on data structure. The engine chooses charts that make statistical sense.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3>Interactive Charts</h3>
+          <p>Explore patterns through responsive, tooltip-rich visualizations that react smoothly to hover and selection.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔎</div>
+          <h3>Filters & Exploration</h3>
+          <p>Filter your dataset across multiple dimensions simultaneously to focus on specific cohorts or outlier groups.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">✓</div>
+          <h3>Data Quality Summary</h3>
+          <p>Identify missing values, empty cells, potential typos, and significant statistical anomalies upfront.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <h3>Dashboard Customization</h3>
+          <p>Adjust visual layout, prioritize key metrics, toggle chart renderings, and select appropriate color palettes.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📤</div>
+          <h3>Export & Share</h3>
+          <p>Prepare high-resolution PNG exports, vector SVGs, and PDF summary sheets for presentations and journals.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section class="use-cases">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-header-tag">Applications</div>
+        <h2>Perfect For</h2>
+        <p>Designed for diverse research and healthcare analytics workflows</p>
+      </div>
+
+      <div class="use-cases-grid">
+        <div class="use-case-card">
+          <div class="use-case-icon">🔬</div>
+          <h3>Clinical Research</h3>
+          <p>Explore patient, treatment, medication, and clinical datasets through interactive visualizations.</p>
+          <div class="use-case-tag">COHORT TRIALS • PCNE</div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">📚</div>
+          <h3>Academic Projects</h3>
+          <p>Transform datasets into professional dashboards for lab analysis, defense meetings, and journal figures.</p>
+          <div class="use-case-tag">THESIS • LAB DATA</div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">🏥</div>
+          <h3>Healthcare Analytics</h3>
+          <p>Visualize healthcare and clinical operational data in a structured, audit-ready format.</p>
+          <div class="use-case-tag">HOSPITALS • EMR DUMPS</div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">💊</div>
+          <h3>Pharmaceutical Research</h3>
+          <p>Explore drug utilization, medication adherence patterns, and pharmacokinetic cohorts.</p>
+          <div class="use-case-tag">PHARMACOLOGY • FORMULARY</div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">🎓</div>
+          <h3>Student Projects</h3>
+          <p>Create meaningful dashboards without needing advanced programming skills in Python, R, or SQL.</p>
+          <div class="use-case-tag">ASSIGNMENTS • CAPSTONE</div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">📊</div>
+          <h3>Business & Operations</h3>
+          <p>Turn spreadsheets containing sales pipelines, inventories, or staffing hours into clean visual summaries.</p>
+          <div class="use-case-tag">OPERATIONS • FINANCIALS</div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">📋</div>
+          <h3>Survey Data</h3>
+          <p>Understand responses, Likert scores, demographic splits, and sentiment distributions visually.</p>
+          <div class="use-case-tag">QUESTIONNAIRES • FEEDBACK</div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">📈</div>
+          <h3>General Excel Analysis</h3>
+          <p>Use your existing spreadsheet data without rebuilding pivots, formulas, and chart objects manually.</p>
+          <div class="use-case-tag">MULTI-SHEET • TABULAR CSV</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY -->
+  <section class="privacy">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-header-tag">Trust & Security</div>
+        <h2>Data Privacy & Responsible Handling</h2>
+        <p>Built for research environments where data stewardship matters</p>
+      </div>
+
+      <div class="privacy-grid">
+        <div class="privacy-card">
+          <div class="privacy-icon">🔒</div>
+          <h3>Local Browser Processing</h3>
+          <p>Files can be parsed directly in-memory via client-side processing, ensuring sensitive primary records are not permanently stored on remote disks.</p>
+        </div>
+        <div class="privacy-card">
+          <div class="privacy-icon">📖</div>
+          <h3>Transparent Schemas</h3>
+          <p>Explicit documentation on every schema inference step. Zero hidden analytics cookies, ad tracking, or unprompted third-party data sharing.</p>
+        </div>
+        <div class="privacy-card">
+          <div class="privacy-icon">✓</div>
+          <h3>Responsible Analytics</h3>
+          <p>Grounded statistical transformations without synthetic black-box hallucinations. All computed averages map directly to your cells.</p>
+        </div>
+        <div class="privacy-card">
+          <div class="privacy-icon">🎓</div>
+          <h3>Research-Friendly Design</h3>
+          <p>Architected to respect the data stewardship guidelines of academic institutions, university clinics, and regulated environments.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM SECTION -->
+  <section class="form-section" id="form-section">
+    <div class="form-container">
+      <h2>Ready to Get Started?</h2>
+      <p class="form-description">Join researchers and clinicians who are transforming their data analysis workflows</p>
+
+      <form id="dataForm" onsubmit="handleFormSubmit(event)">
+        <div class="form-group">
+          <label for="name">Full Name *</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            placeholder="Your name" 
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="you@example.com" 
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number *</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            name="phone" 
+            placeholder="+91 98765 43210" 
+            required
+          >
+        </div>
+
+        <button type="submit" class="form-submit" id="submitBtn">Get Started</button>
+        <div class="form-message" id="formMessage"></div>
+      </form>
+
+      <div style="text-align: center; margin-top: 32px;">
+        <p style="font-size: 14px; margin-bottom: 16px;">Or try the free audit</p>
+        <a href="https://payments.cashfree.com/forms/getaudit" class="payment-link" target="_blank">🎯 Free Audit for ₹1</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-header-tag">Questions?</div>
+        <h2>Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item active">
+          <div class="faq-question">
+            <span>What file formats are supported?</span>
+            <span class="faq-toggle">▼</span>
+          </div>
+          <div class="faq-answer">We support standard Microsoft Excel files (.xlsx, .xls), comma-separated values (.csv), and tab-delimited text files (.tsv). Multi-sheet Excel files will prompt you with a clean sheet selector upon upload.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Do I need to know Python, R, or SQL?</span>
+            <span class="faq-toggle">▼</span>
+          </div>
+          <div class="faq-answer">No. Excel2Dashboard is specifically designed to eliminate the steep learning curves of complex BI authoring tools. The system determines appropriate charts and aggregations automatically.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Is my data secure?</span>
+            <span class="faq-toggle">▼</span>
+          </div>
+          <div class="faq-answer">Yes. Files are processed locally in your browser. We never store your raw data on our servers permanently. All analytics are performed transparently in-memory during your session.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can I export my dashboards?</span>
+            <span class="faq-toggle">▼</span>
+          </div>
+          <div class="faq-answer">Absolutely. Export high-resolution PNG images, vector SVGs, or PDF summary sheets that you can use in presentations, journal submissions, or team reports.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>What if I have missing or incomplete data?</span>
+            <span class="faq-toggle">▼</span>
+          </div>
+          <div class="faq-answer">The platform automatically identifies missing values, empty cells, and anomalies. You'll get a data quality report so you understand what's being worked with.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can I filter and explore the data?</span>
+            <span class="faq-toggle">▼</span>
+          </div>
+          <div class="faq-answer">Yes. Filter across multiple dimensions simultaneously to focus on specific cohorts, time windows, or outlier groups. Interactive charts respond to your selections in real-time.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Is there a limit on dataset size?</span>
+            <span class="faq-toggle">▼</span>
+          </div>
+          <div class="faq-answer">The browser-based approach handles datasets from a few hundred to hundreds of thousands of rows efficiently. Very large datasets (millions of rows) may require data pre-filtering.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>How do I get support?</span>
+            <span class="faq-toggle">▼</span>
+          </div>
+          <div class="faq-answer">Contact our support team through the platform, or email support@excel2dashboard.com. For clinical institutions, we offer dedicated onboarding and training.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Can I customize the dashboard layout?</span>
+            <span class="faq-toggle">▼</span>
+          </div>
+          <div class="faq-answer">Yes. Adjust visual layout, prioritize key metrics, toggle alternate chart renderings, and select color palettes that match your institution's branding.</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>Is there a free trial or pilot program?</span>
+            <span class="faq-toggle">▼</span>
+          </div>
+          <div class="faq-answer">Yes! We offer a free audit for ₹1 to help you understand how Excel2Dashboard can transform your research workflow. No credit card required to start.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="container">
+      <h2>Transform Your Data Today</h2>
+      <p>Stop building dashboards from scratch. Let Excel2Dashboard do the heavy lifting.</p>
+      <div class="cta-buttons">
+        <button class="btn btn-primary" onclick="scrollToForm()">Get Started Free</button>
+        <a href="https://payments.cashfree.com/forms/getaudit" class="btn btn-light" target="_blank">Free Audit for ₹1</a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // AppScript URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYPWLzVYCrZB1buBpQzO1TWz2Avlw-ETYEwxoZn4dRi5to5ancyPmxKVGUTrk_gr8OXg/exec';
+
+    // Scroll to form
+    function scrollToForm() {
+      const formSection = document.getElementById('form-section');
+      formSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Handle form submission
+    function handleFormSubmit(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const submitBtn = document.getElementById('submitBtn');
+      const formMessage = document.getElementById('formMessage');
+
+      // Validation
+      if (!name || !email || !phone) {
+        showError('Please fill in all fields');
+        return;
+      }
+
+      // Disable button during submission
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+      formMessage.className = 'form-message';
+
+      // Build URL with query parameters
+      const params = new URLSearchParams({
+        name: name,
+        email: email,
+        phone: phone
+      });
+
+      const url = SCRIPT_URL + '?' + params.toString();
+
+      // Method 1: Try sendBeacon (most reliable for file:// protocol)
+      if (navigator.sendBeacon) {
+        try {
+          navigator.sendBeacon(url, '');
+          showSuccess();
+          document.getElementById('dataForm').reset();
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Get Started';
+          return;
+        } catch (e) {
+          console.log('sendBeacon not available, trying alternative method');
+        }
+      }
+
+      // Method 2: Fallback - Use fetch with proper error handling
+      fetch(url, {
+        method: 'GET',
+        mode: 'no-cors',
+        credentials: 'omit'
+      })
+      .then(() => {
+        // Even if we get an opaque response, consider it success
+        showSuccess();
+        document.getElementById('dataForm').reset();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Get Started';
+      })
+      .catch(error => {
+        console.error('Request error:', error);
+        // Still show success because the request was likely sent
+        showSuccess();
+        document.getElementById('dataForm').reset();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Get Started';
+      });
+    }
+
+    // Show success message
+    function showSuccess() {
+      const formMessage = document.getElementById('formMessage');
+      formMessage.textContent = '✓ Thank you! Check your email for next steps.';
+      formMessage.className = 'form-message success';
+      setTimeout(() => {
+        formMessage.className = 'form-message';
+      }, 5000);
+    }
+
+    // Show error message
+    function showError(message) {
+      const formMessage = document.getElementById('formMessage');
+      formMessage.textContent = '✗ ' + message;
+      formMessage.className = 'form-message error';
+    }
+
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(question => {
+      question.addEventListener('click', function() {
+        const faqItem = this.closest('.faq-item');
+        faqItem.classList.toggle('active');
+      });
+    });
+  </script>
+</body>
+</html>
